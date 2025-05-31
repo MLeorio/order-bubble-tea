@@ -45,5 +45,10 @@ export class OrderController {
     updateStatus(@Param('id') id: string, @Body('status') status: string) {
         return this.orderService.updateStatus(id, status);
     }
+
+    @Post('cinetpay-callback')
+    async handleCinetPayCallback(@Body() body: any) {
+        return this.orderService.handleCinetPayCallback(body);
+    }
 }
   

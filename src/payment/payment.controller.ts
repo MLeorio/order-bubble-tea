@@ -7,11 +7,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class PaymentController {
     constructor(private paymentService: PaymentService) { }
 
-    @UseGuards(JwtAuthGuard)
-    @Post()
-    async createPayment(
-        @Body() body: { amount: number; email: string },
-    ) {
-        return this.paymentService.initTransaction(body.amount, body.email);
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Post()
+    // async createPayment(
+    //     @Body() body: { amount: number; email: string },
+    // ) {
+    //     return this.paymentService.initTransaction(body.amount, body.email);
+    // }
 }
