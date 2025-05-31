@@ -1,43 +1,50 @@
-// src/payment/payment.service.ts
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
 @Injectable()
 export class PaymentService {
-    private readonly baseUrl = 'https://sandbox-api.fedapay.com/v1'; // change to prod URL in prod
+    private baseUrl = 'https://app.paydunya.com/api/v1/checkout-invoice/create';
+    private headers = {
+        'Content-Type': 'application/json',
+        'PAYDUNYA-MASTER-KEY': process.env.PAYDUNYA_MASTER_KEY,
+        'PAYDUNYA-PRIVATE-KEY': process.env.PAYDUNYA_PRIVATE_KEY,
+        'PAYDUNYA-TOKEN': process.env.PAYDUNYA_TOKEN,
+        'PAYDUNYA-MODE': 'test',
+    };
 
-    private getHeaders() {
-        const key = process.env.FEDAPAY_SECRET_KEY;
-        if (!key) throw new InternalServerErrorException('Missing FedaPay secret key');
-        return {
-            Authorization: `Bearer ${key}`,
-            'Content-Type': 'application/json',
+    async createInvoice(amount: number, description: string, customerEmail: string) {
+        const data = {
+            invoice: {
+                items: [
+                    {
+                        name: 'Commande Bubble Tea',
+                        quantity: 1,
+                        unit_price: amount,
+                        total_price: amount,
+                        description,
+                    },
+                ],
+                total_amount: amount,
+                description,
+            },
+            store: {
+                name: 'Bubble Tea',
+                tagline: 'Bubble Tea Commande',
+                phone: '22890123456',
+                postal_address: 'Lomé, Togo',
+                website_url: 'https://bubbletea.tg',
+            },
+            actions: {
+                callback_url: 'http://localhost:3000/orders/callback',
+                cancel_url: 'http://localhost:3000/orders/cancel',
+                return_url: 'http://localhost:3000/orders/success',
+            },
+            custom_data: {
+                customer_email: customerEmail,
+            },
         };
-    }
 
-    async initTransaction(amount: number, email: string) {
-        try {
-            const response = await axios.post(
-                `${this.baseUrl}/transactions`,
-                {
-                    transaction: {
-                        amount,
-                        description: 'Paiement Bubble Tea',
-                        currency: 8,
-                    },
-                    customer: {
-                        email,
-                    },
-                },
-                {
-                    headers: this.getHeaders(),
-                },
-            );
-
-            return response.data;
-        } catch (error) {
-            console.error('FedaPay error:', error.response?.data || error.message);
-            throw new InternalServerErrorException('Erreur de communication avec FedaPay');
-        }
+        const response = await axios.post(this.baseUrl, data, { headers: this.headers });
+        return response.data;
     }
 }
