@@ -5,7 +5,6 @@ import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Order, OrderDocument } from './schema/order.schema';
 import { CreateOrderDto } from './dto/order.dto';
-import * as crypto from 'crypto';
 
 
 @Injectable()
@@ -111,54 +110,5 @@ export class OrderService {
 
         return { message: `Commande mise à jour: ${status}`, success: true };
       }
-
-    
-    // async handleCinetPayCallback(data: any) {
-    //     const transactionId = data.transaction_id;
-    //     const result = data.cpm_result; // "00" = succès
-    //     const signature = data.signature;
-
-    //     if (!transactionId || !signature) {
-    //         return { message: 'Transaction ID ou signature manquante' };
-    //     }
-
-    //     // Construire la chaîne de signature dans le bon ordre
-    //     const rawData = [
-    //         data.cpm_amount,
-    //         data.cpm_currency,
-    //         data.cpm_trans_id,
-    //         data.cpm_trans_date,
-    //         data.cmp_payment_date,
-    //         data.cpm_payment_time,
-    //         data.cpm_site_id,
-    //         data.signature
-    //     ].join('');
-
-    //     // Hasher avec la clé secrète
-    //     const apiKey = this.configService.get<string>('CINETPAY_APIKEY') || '';
-    //     const generatedSignature = crypto
-    //         .createHmac('sha512', apiKey)
-    //         .update(rawData)
-    //         .digest('hex');
-
-    //     // Comparer les signatures
-    //     if (signature !== generatedSignature) {
-    //         return { message: 'Signature invalide, rejet du callback', success: false };
-    //     }
-
-    //     const status = result === '00' ? 'paid' : 'failed';
-
-    //     const updatedOrder = await this.orderModel.findByIdAndUpdate(
-    //         transactionId,
-    //         { status },
-    //         { new: true },
-    //     );
-
-    //     if (!updatedOrder) {
-    //         return { message: 'Commande non trouvée', success: false };
-    //     }
-
-    //     return { message: `Commande mise à jour: ${status}`, success: true };
-    //   }
 
 }
